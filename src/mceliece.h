@@ -8,7 +8,7 @@
 #define _ENGINE_BPMECS_H
 
 #ifndef _WIN32
-#include "config.h"
+#include <openssl/opensslconf.h>
 #endif
 
 #include <stdio.h>
@@ -22,13 +22,14 @@ int bpmecs_finish(ENGINE * engine);
 
 int bpmecs_init(ENGINE * engine);
 
-int bpmecs_encrypt(EVP_PKEY_CTX *pctx, unsigned char *to, size_t *outlen, const unsigned char *from, size_t inlen);
+int bpmecs_encrypt(int len, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
 
-int bpmecs_decrypt(EVP_PKEY_CTX *pctx, unsigned char *to, size_t *outlen, const unsigned char *from, size_t inlen);
+int bpmecs_decrypt(int len, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
 
-EVP_PKEY *bpmecs_load_public_key(ENGINE * e, const char *s_key_id,	UI_METHOD * ui_method, void *callback_data);
 
-EVP_PKEY  *bpmecs_load_private_key(ENGINE * e, const char *s_key_id,	UI_METHOD * ui_method, void *callback_data);
+int bpmecs_keygen(RSA *rsa, int bits,  BIGNUM * e,BN_GENCB *cb );
+
+EVP_PKEY *bpmecs_load_key(ENGINE * e, const char *s_key_id,	UI_METHOD * ui_method, void *callback_data);
 
 #endif
 
