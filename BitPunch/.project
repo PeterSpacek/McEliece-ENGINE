@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>BitPunch</name>
+	<comment></comment>
+	<projects>
+		<project>libtasn1</project>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+	</natures>
+	<variableList>
+		<variable>
+			<name>libtasn1</name>
+			<value>file:/home/pete/Documents/libasn1-0.1.0</value>
+		</variable>
+	</variableList>
+</projectDescription>

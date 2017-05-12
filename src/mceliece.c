@@ -108,14 +108,17 @@ int bpmecs_encrypt(int inlen, const unsigned char *from, unsigned char *to, RSA 
 	        BPU_gf2VecFree(&pt);
 	        return 0;
 	  }
+	  unsigned char * copy;
+	  copy=malloc(inlen+1);
+	  strcpy(copy+1, from);
+	  copy[0]=inlen;
 
-
-	  if(char2gf2Vec(from,inlen,pt)==-1){
+	  if(char2gf2Vec(copy,inlen+1,pt)==-1){
 	        fprintf(stderr, "char2gf2Vec function error\n");
 	        BPU_gf2VecFree(&pt);
 	        return 0;
 	  }
-
+	  free(copy);
 	  // alocate cipher text vector
 	  if (BPU_gf2VecMalloc(&ct, ctx->ct_len)) {
 	        BPU_printError("CT vector allocation error");
@@ -188,14 +191,18 @@ int bpmecs_decrypt(int inlen, const unsigned char *from, unsigned char *to, RSA 
     outlen=ctx->pt_len/8;
 
 	//to=(unsigned char*)malloc(outlen);
+	unsigned char * copy;
+	copy=malloc(outlen);
 
-    if( gf2Vec2char(pt,outlen,to)==-1){
+    if( gf2Vec2char(pt,outlen,copy)==-1){
         fprintf(stderr, "gf2Vec2char function error\n");
         BPU_gf2VecFree(&ct);
         BPU_gf2VecFree(&pt);
         return 0;
     }
-
+	strcpy(to, copy+1);
+	outlen=copy[0];
+	free(copy);
     BPU_gf2VecFree(&ct);
     BPU_gf2VecFree(&pt);
 
@@ -262,15 +269,22 @@ EVP_PKEY * bpmecs_load_key(ENGINE *eng, const char *key_id,UI_METHOD *ui_method,
 		return NULL;
 	}
 
-	//fake loading
+	//fake key loading needs to be done to be able to use loading function
 	EVP_PKEY *privkey;
-	FILE *fp;
-	OpenSSL_add_all_algorithms();
+	BIO *keybio ;
+	char keys[]="-----BEGIN PUBLIC KEY-----\n"\
+	"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy8Dbv8prpJ/0kKhlGeJY\n"\
+	"ozo2t60EG8L0561g13R29LvMR5hyvGZlGJpmn65+A4xHXInJYiPuKzrKUnApeLZ+\n"\
+	"vw1HocOAZtWK0z3r26uA8kQYOKX9Qt/DbCdvsF9wF8gRK0ptx9M6R13NvBxvVQAp\n"\
+	"fc9jB9nTzphOgM4JiEYvlV8FLhg9yZovMYd6Wwf3aoXK891VQxTr/kQYoq1Yp+68\n"\
+	"i6T4nNq7NWC+UNVjQHxNQMQMzU6lWCX8zyg3yH88OAQkUXIXKfQ+NkvYQ1cxaMoV\n"\
+	"PpY72+eVthKzpMeyHkBn7ciumk5qgLTEJAfWZpe4f4eFZj/Rc8Y8Jj2IS5kVPjUy\n"\
+	"wQIDAQAB\n"\
+	"-----END PUBLIC KEY-----\n";
+	keybio = BIO_new_mem_buf(keys, -1);
 	privkey = EVP_PKEY_new();
-	fp = fopen ("/home/pete/git/OpenSSL-with-McEliece/key.pem", "r");
-	PEM_read_PrivateKey( fp, &privkey, NULL, NULL);
-	fclose(fp);
-
+	PEM_read_bio_PUBKEY( keybio, &privkey, NULL, NULL);
 	return privkey;
+
 }
 

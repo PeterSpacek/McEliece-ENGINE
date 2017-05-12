@@ -29,7 +29,9 @@ static RSA_METHOD mecs =
   /* encrypt */
   bpmecs_encrypt,
   bpmecs_encrypt,
+//  NULL,
   bpmecs_decrypt,
+ // NULL,
   /* decrypt */
   bpmecs_decrypt,
   NULL,

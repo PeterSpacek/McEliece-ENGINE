@@ -1,0 +1,46 @@
+max=10
+avg_enc=0
+avg_dec=0
+max1=0
+min1=150
+max2=0
+min2=150
+echo AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA>input.txt
+for (( i=1; i <= $max; ++i ))
+do
+echo "$i"
+start_time=`date +%s%3N`
+openssl pkeyutl -engine pwd/bpmecs.so -encrypt -in input.txt -out input.txt.enc -inkey key -keyform engine
+end_time=`date +%s%3N`
+let avg_enc=$avg_enc+$end_time
+let avg_enc=$avg_enc-$start_time
+let enc=$end_time-$start_time
+if (("$enc">"$max1")); then 
+max1=$enc
+fi
+if (("$enc"<"$min1")); then 
+min1=$enc
+fi
+     
+echo encryption time was `expr $end_time - $start_time` ms.
+
+start_time=`date +%s%3N`
+openssl pkeyutl -engine pwd/bpmecs.so -decrypt -in input.txt.enc -out o.txt -inkey key -keyform engine
+end_time=`date +%s%3N`
+let avg_dec=$avg_dec+$end_time
+let avg_dec=$avg_dec-$start_time
+let dec=$end_time-$start_time
+if (("$dec"<"$min2")); then 
+min2=$dec
+fi
+if (("$dec">"$max2")); then 
+max2=$dec
+fi
+echo decryption time was `expr $end_time - $start_time` ms.
+done
+echo max encryption time was $max1 ms.
+echo min encryption time was $min1 ms.
+echo avg encryption time was $avg_enc ms.
+echo avg decryption time was $avg_dec ms.
+echo max decryption time was $max2 ms.
+echo min decryption time was $min2 ms.

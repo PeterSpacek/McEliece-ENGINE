@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-fPIC
 LDFLAGS = -shared 
 
-BITPUNCHDIR= ../BitPunch/lib/src/
+BITPUNCHDIR= BitPunch/lib/src/
 TARGET=bpmecs.so
 SOURCES = \
 	src/compile.c

@@ -1,0 +1,65 @@
+# test results
+results
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+~*
+massif.*
+
+# object files
+*.o
+*.gch
+*.pyc
+
+# profiling files
+*.gcda
+*.out
+
+# QtCreator files
+*.c.*
+*.h.*
+*.pro.user*
+*.pri
+*.config
+*.creator
+*.files
+*.includes
+*.pro
+*.config
+*.creator
+
+# sublime
+*.sublime-*
+
+# vim generated files
+*.swp
+
+# latex generated files
+*.aux
+*.toc
+*.idx
+*.ind
+*.ilg
+*.log
+*.out
+*.brf
+*.blg 
+*.bbl 
+
+# key files
+*.der
+
+# build
+build
+dist
+tmp
+
+# indent files
+*~
