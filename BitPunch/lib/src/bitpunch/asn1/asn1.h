@@ -26,10 +26,10 @@
 #include <stdint.h>
 #include <libtasn1.h>
 
-#define BPU_STR_ASN1_MECS_PRI_KEY "asn1/MecsPriKey.asn"
-#define BPU_STR_ASN1_MECS_PUB_KEY "asn1/MecsPubKey.asn"
-#define BPU_STR_ASN1_MECS_PRI_KEY_NAME "BPU_ASN1.MecsPriKey"
-#define BPU_STR_ASN1_MECS_PUB_KEY_NAME "BPU_ASN1.MecsPubKey"
+#define BPU_STR_ASN1_MECS_PRI_KEY <asn1/MecsPriKey.asn>
+#define BPU_STR_ASN1_MECS_PUB_KEY <asn1/MecsPubKey.asn>
+#define BPU_STR_ASN1_MECS_PRI_KEY_NAME <BPU_ASN1.MecsPriKey>
+#define BPU_STR_ASN1_MECS_PUB_KEY_NAME <BPU_ASN1.MecsPubKey>
 
 /// src: http://www.hrz.tu-darmstadt.de/itsicherheit/object_identifier/oids_der_informatik__cdc/oids_des_fachgebietes_cdc_der_informatik.de.jsp
 #define BPU_STR_ASN1_OID_MECS_BASIC_GOPPA "1.3.6.1.4.1.8301.3.1.3.4.1"

@@ -19,20 +19,25 @@
 #error did not get engine.h
 #endif
 
+//list of control commands
+#define CMD_PARA	ENGINE_CMD_BASE
+#define CMD_DIR	ENGINE_CMD_BASE+1
 
+
+static int bpmecs_destroy(ENGINE * e);
+int bpmecs_control_func(ENGINE *e, int cmd, long i, void *p, void (*f) (void));
+
+//engine ID
 static const char *engine_id ="bpmecs";
+//engine name
 static const char *engine_name ="bitpuch mceliece engine";
-
-static RSA_METHOD mecs =
+//structure for engine to know which function should use for encryption and decryption
+static RSA_METHOD bpmecs =
 {
   "McEliece",
-  /* encrypt */
   bpmecs_encrypt,
-  bpmecs_encrypt,
-//  NULL,
-  bpmecs_decrypt,
- // NULL,
-  /* decrypt */
+  NULL,
+  NULL,
   bpmecs_decrypt,
   NULL,
   NULL,
@@ -41,85 +46,107 @@ static RSA_METHOD mecs =
   0,
   NULL,
   NULL,
-  NULL,
-  bpmecs_keygen
+  NULL
 };
 
-static int bpmecs_destroy(ENGINE * e);
-static int register_pmeth_bpmecs(int id, EVP_PKEY_METHOD **pmeth, int flags);
-static int bpmecs_pkey_meths(ENGINE *e, EVP_PKEY_METHOD **pmeth, const int **nids, int nid);
+//control commands initialization
+static const ENGINE_CMD_DEFN bpmecs_cmds[] = {
+{CMD_PARA,
+"KEYGEN",
+"Type A or B for specify McEliece key parameters. Key generation will start right after.",
+ENGINE_CMD_FLAG_STRING},
+{CMD_DIR,
+"DIR",
+"You can specify output directory for public and private keys",
+ENGINE_CMD_FLAG_STRING},
+{0, NULL, NULL, 0}
+};
 
-/* Destructor */
+//mathes control command and its function
+int bpmecs_control_func(ENGINE *e, int cmd, long i, void *p, void (*f) (void)){
+		(void)i;
+		(void)f;
+		switch (cmd) {
+		case CMD_DIR:
+			return bpmecs_set_key_DIR((const char *)p);
+			break;
+		case CMD_PARA:
+			return bpmecs_keygen_ctrl((const char *)p);
+			break;
+		default:
+			break;
+		}
+		return 1;
+}
+
+//engine destructor
 static int bpmecs_destroy(ENGINE * e)
 {
 	(void)e;
 	return 1;
 }
 
-
+//basic engine setting
 static int bind_helper(ENGINE * e)
 {
+	//way to tell engine what is the its ID
 	if (!ENGINE_set_id(e, engine_id)) {
       fprintf(stderr, "ENGINE_set_id failed\n");
       return 0;
     }
-
+	//way to tell engine what is the its name
 	if (!ENGINE_set_name(e, engine_name)) {
       fprintf(stderr, "ENGINE_set_name failed\n");
       return 0;
     }
-
+	//way to tell engine what initialization function should use
 	if (!ENGINE_set_init_function(e, bpmecs_init) ) {
       fprintf(stderr, "ENGINE_set_init_function failed\n");
       return 0;
     }
-
+	//way to tell engine what destructor should be using
 	if (!ENGINE_set_destroy_function(e, bpmecs_destroy) ) {
       fprintf(stderr, "ENGINE_set_destroy_function failed\n");
       return 0;
     }
-
+	//way to tell engine what finish function should use
 	if (!ENGINE_set_finish_function(e, bpmecs_finish) ) {
       fprintf(stderr, "ENGINE_set_finish_function failed\n");
       return 0;
     }
-/*
-    if (!ENGINE_set_ctrl_function(e, bpmecs_crtl)) {
+	//way to tell engine the control commands
+	if (!ENGINE_set_cmd_defns(e, bpmecs_cmds)) {
+		fprintf(stderr, "ENGINE_set_cmd_defns failed\n");
+		return 0;
+	}
+	//way to tell engine what function for processing control command should use
+    if (!ENGINE_set_ctrl_function(e, bpmecs_control_func)) {
       fprintf(stderr,"ENGINE_ctrl_function failed\n");
       return 0;
-    }*/
-
+    }
+    //way to tell engine how to load private key
     if (!ENGINE_set_load_privkey_function(e, bpmecs_load_key)) {
       fprintf(stderr,"ENGINE_set_load_privkey_function failed \n");
       return 0;
     }
-
+    //way to tell engine how to load public key
     if (!ENGINE_set_load_pubkey_function(e, bpmecs_load_key)) {
       fprintf(stderr,"ENGINE_set_load_pubkey_function failed \n");
       return 0;
     }
-
-    if (!ENGINE_set_RSA(e, &mecs)	) {
+    //way to tell engine that it will serve as public key system
+    if (!ENGINE_set_RSA(e, &bpmecs)	) {
       printf("ENGINE_init_function failed\n");
       return 0;
     }
 
-
-	//		!ENGINE_set_cmd_defns(e, pkcs11_cmd_defns) ||
-
-
-
 	return 1;
 }
 
+//function that connect openssl and engine
 static int bind(ENGINE * e, const char *id)
 {
-	/*
-	if (id && (strcmp(id, engine_id) != 0)) {
-		fprintf(stderr, "bad engine id\n");
-		return 0;
-	}
-	*/
+
 	if (!bind_helper(e)) {
 		fprintf(stderr, "bind failed\n");
 		return 0;

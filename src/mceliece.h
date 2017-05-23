@@ -26,8 +26,9 @@ int bpmecs_encrypt(int len, const unsigned char *from, unsigned char *to, RSA *r
 
 int bpmecs_decrypt(int len, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
 
+int bpmecs_keygen_ctrl(const char *param);
 
-int bpmecs_keygen(RSA *rsa, int bits,  BIGNUM * e,BN_GENCB *cb );
+int bpmecs_set_key_DIR(const char *dir);
 
 EVP_PKEY *bpmecs_load_key(ENGINE * e, const char *s_key_id,	UI_METHOD * ui_method, void *callback_data);
 
