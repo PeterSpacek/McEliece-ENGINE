@@ -1,0 +1,5 @@
+make
+make clean
+openssl pkeyutl -engine pwd/bpmecs.so -encrypt -in input.txt -out input.txt.enc -inkey  -keyform engine
+openssl pkeyutl -engine pwd/bpmecs.so -decrypt -in input.txt.enc -out o.txt -inkey  -keyform engine
+openssl engine pwd/bpmecs.so -pre DIR:key -pre KEYGEN:A
